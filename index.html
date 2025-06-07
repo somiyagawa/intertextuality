@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>間テキスト性認識とテキスト再利用検出</title>
+    <title>間テクスト性認識とテクスト再利用検出</title>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -314,7 +314,7 @@
         <!-- Slide 1: Title -->
         <div class="slide active">
             <div class="slide-number">1 / 20</div>
-            <h1>間テキスト性分析における諸大規模言語モデルとテキスト・リユース探知プログラムTRACERの使用比較</h1>
+            <h1>間テクスト性分析における諸大規模言語モデルとテクスト・リユース探知プログラムTRACERの使用比較</h1>
             <p class="subtitle">宮川創</p>
             <p class="subtitle">筑波大学</p>
             <p class="author">2025年6月7日</p>
@@ -327,7 +327,7 @@
             <div class="grid">
                 <div class="card">
                     <h3>理論的基盤</h3>
-                    <p>間テキスト性の概念と歴史的発展</p>
+                    <p>間テクスト性の概念と歴史的発展</p>
                 </div>
                 <div class="card">
                     <h3>主要ソフトウェア</h3>
@@ -344,16 +344,16 @@
         <!-- Slide 3: Historical Background -->
         <div class="slide">
             <div class="slide-number">3 / 20</div>
-            <h2>間テキスト性理論の起源</h2>
+            <h2>間テクスト性理論の起源</h2>
             <div class="timeline">
                 <div class="timeline-item">
                     <h3>1966年 - Julia Kristeva</h3>
-                    <p>「間テキスト性」という用語を初めて提唱<br>
+                    <p>「間テクスト性」という用語を初めて提唱<br>
                     バフチンの対話理論とソシュール記号論を統合</p>
                 </div>
                 <div class="timeline-item">
                     <h3>1967年 - 「言葉、対話、小説」</h3>
-                    <p>「テキストは引用のモザイク」という定義を確立</p>
+                    <p>「テクストは引用のモザイク」という定義を確立</p>
                 </div>
                 <div class="timeline-item">
                     <h3>1981年 - Gérard Genette</h3>
@@ -373,7 +373,7 @@
                 <li><span class="highlight">2020年代：</span>大規模言語モデルとトランスフォーマーの応用</li>
             </ul>
             <div class="card" style="margin-top: 2rem;">
-                <p>2010年代のテキスト・リユース探知の主要研究機関：ゲッティンゲン・デジタル人文学センター、ライプツィヒ大学、バッファロー大学など
+                <p>2010年代のテクスト・リユース探知の主要研究機関：ゲッティンゲン・デジタル人文学センター、ライプツィヒ大学、バッファロー大学など
                 </p>
             </div>
         </div>
@@ -390,10 +390,6 @@
                 <div class="feature-box">
                     <h4>Unicodeで書かれたあらゆる言語（実例は8言語）</h4>
                     <p>対応言語</p>
-                </div>
-                <div class="feature-box">
-                    <h4>75%</h4>
-                    <p>再現率</p>
                 </div>
                 <div class="feature-box">
                     <h4>6段階</h4>
@@ -417,7 +413,7 @@
                 <li>後処理（Postprocessing）</li>
             </ol>
             <div class="card" style="margin-top: 2rem;">
-                <p><span class="highlight">検出可能なテキスト再利用タイプ：</span><br>
+                <p><span class="highlight">検出可能なテクスト再利用タイプ：</span><br>
                 逐語的引用、準逐語的引用、パラフレーズ、暗示的参照</p>
             </div>
         </div>
@@ -431,7 +427,7 @@
                     <h3>強み</h3>
                     <ul>
                         <li>最も包括的なアルゴリズム</li>
-                        <li>歴史的テキストに特化した設計</li>
+                        <li>歴史的テクストに特化した設計</li>
                         <li>言語非依存アーキテクチャ</li>
                         <li>高度なカスタマイズ性</li>
                         <li>WordNetを活用した引喩やパラフレーズの検知</li>
@@ -486,7 +482,7 @@
             </ul>
             <h3 style="margin-top: 2rem;">動作モード</h3>
             <ul>
-                <li><span class="highlight">Queryモード：</span>参照テキストからの引用検出</li>
+                <li><span class="highlight">Queryモード：</span>参照テクストからの引用検出</li>
                 <li><span class="highlight">All-pairsモード：</span>コーパス全体での相互比較</li>
                 <li><span class="highlight">Seriatimモード：</span>最適アライメントの特定</li>
             </ul>
@@ -504,7 +500,7 @@
                 </div>
                 <div class="card">
                     <h3>eTRAPプロジェクト</h3>
-                    <p>古代言語テキストの包括的分析フレームワーク: TRACER (発表者の博論含む）</p>
+                    <p>古代言語テクストの包括的分析フレームワーク: TRACER (発表者の博論含む）</p>
                 </div>
               
                 <div class="card">
@@ -524,15 +520,12 @@
             <h2>大規模言語モデルによるアプローチ</h2>
             <h3>主要なプロンプティング戦略</h3>
             <ul>
-                <li><span class="highlight">自然言語推論（NLI）：</span>含意タスクとしての間テキスト性検出</li>
+                <li><span class="highlight">自然言語推論（NLI）：</span>含意タスクとしての間テクスト性検出</li>
                 <li><span class="highlight">Chain-of-Thought：</span>段階的推論による分析</li>
                 <li><span class="highlight">ロールベース：</span>文学研究者としての振る舞い</li>
                 <li><span class="highlight">Min-K%確率：</span>訓練データ検出手法</li>
             </ul>
-            <div class="card" style="margin-top: 2rem;">
-                <p>Zero-shot精度：60-80%<br>
-                Few-shot改善：10-15%（2-5例使用時）</p>
-            </div>
+   
         </div>
 
         <!-- Slide 11: LLM Performance Comparison -->
@@ -650,7 +643,7 @@
                     <th>理由</th>
                 </tr>
                 <tr>
-                    <td>歴史的テキスト深層分析</td>
+                    <td>歴史的テクスト深層分析</td>
                     <td>TRACER</td>
                     <td>アルゴリズムの包括性</td>
                 </tr>
@@ -678,7 +671,7 @@
             <h2>結論</h2>
             <div class="card" style="max-width: 800px; margin: 0 auto;">
                 <p style="font-size: 1.4rem; line-height: 2;">
-                間テキスト性検出は、伝統的な計算手法と最先端技術が融合する転換点。
+                間テクスト性検出は、伝統的な計算手法と最先端技術が融合する転換点。
                 </p>
                 <ul style="margin-top: 2rem;">
                     <li><span class="highlight">TRACER：</span>アルゴリズムの包括性</li>
@@ -686,7 +679,7 @@
                     <li><span class="highlight">LLMs：</span>意味理解</li>
                 </ul>
                 <p style="margin-top: 2rem; font-size: 1.3rem;">
-                各アプローチが独自の強みを持ち、テキスト分析ツールの進化するエコシステムに貢献。
+                各アプローチが独自の強みを持ち、テクスト分析ツールの進化するエコシステムに貢献。
                 </p>
             </div>
             <p style="text-align: center; margin-top: 3rem; font-size: 1.2rem;">

@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>間テキスト性認識とテキスト再利用検出</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #7c3aed;
+            --accent-color: #f59e0b;
+            --background-dark: #0f172a;
+            --background-light: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            --gradient-3: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--background-dark);
+            color: var(--text-primary);
+            overflow: hidden;
+            line-height: 1.6;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 60px;
+            position: relative;
+            background: var(--gradient-3);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 1rem;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin: 1.5rem 0;
+            color: var(--accent-color);
+        }
+
+        p, li {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .highlight {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1.2rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table th {
+            background: var(--gradient-2);
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: var(--gradient-2);
+            border: none;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-number {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background: var(--accent-color);
+            border-radius: 50%;
+        }
+
+        .timeline-item::after {
+            content: "";
+            position: absolute;
+            left: 9px;
+            top: 20px;
+            width: 2px;
+            height: calc(100% + 1rem);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-box {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .feature-box h4 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .author {
+            position: absolute;
+            bottom: 60px;
+            right: 60px;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            h2 {
+                font-size: 2rem;
+            }
+            
+            p, li {
+                font-size: 1.1rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <div class="slide-number">1 / 20</div>
+            <h1>間テキスト性分析における諸大規模言語モデルとテキスト・リユース探知プログラムTRACERの使用比較</h1>
+            <p class="subtitle">宮川創</p>
+            <p class="subtitle">筑波大学</p>
+            <p class="author">2025年6月7日</p>
+        </div>
+
+        <!-- Slide 2: Overview -->
+        <div class="slide">
+            <div class="slide-number">2 / 20</div>
+            <h2>プレゼンテーション概要</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>理論的基盤</h3>
+                    <p>間テキスト性の概念と歴史的発展</p>
+                </div>
+                <div class="card">
+                    <h3>主要ソフトウェア</h3>
+                    <p>TRACER、Passim、LLMアプローチ</p>
+                </div>
+                <div class="card">
+                    <h3>実装事例</h3>
+                    <p>デジタル人文学における応用</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Slide 3: Historical Background -->
+        <div class="slide">
+            <div class="slide-number">3 / 20</div>
+            <h2>間テキスト性理論の起源</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h3>1966年 - Julia Kristeva</h3>
+                    <p>「間テキスト性」という用語を初めて提唱<br>
+                    バフチンの対話理論とソシュール記号論を統合</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>1967年 - 「言葉、対話、小説」</h3>
+                    <p>「テキストは引用のモザイク」という定義を確立</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>1981年 - Gérard Genette</h3>
+                    <p>トランステクスチュアリティの5分類を体系化</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Evolution to Digital -->
+        <div class="slide">
+            <div class="slide-number">4 / 20</div>
+            <h2>技術の進化と人文学への応用</h2>
+            <ul>
+                <li><span class="highlight">1990年代：</span>データベース構築とコンコーダンス作成</li>
+                <li><span class="highlight">2000年代：</span>アルゴリズム的アプローチの開発</li>
+                <li><span class="highlight">2010年代：</span>機械学習とNLPの統合</li>
+                <li><span class="highlight">2020年代：</span>大規模言語モデルとトランスフォーマーの応用</li>
+            </ul>
+            <div class="card" style="margin-top: 2rem;">
+                <p>2010年代のテキスト・リユース探知の主要研究機関：ゲッティンゲン・デジタル人文学センター、ライプツィヒ大学、バッファロー大学など
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 5: TRACER Introduction -->
+        <div class="slide">
+            <div class="slide-number">5 / 20</div>
+            <h2>TRACER：包括的アルゴリズムスイート</h2>
+            <div class="feature-grid">
+                <div class="feature-box">
+                    <h4>700+</h4>
+                    <p>アルゴリズム数</p>
+                </div>
+                <div class="feature-box">
+                    <h4>8言語</h4>
+                    <p>対応言語数</p>
+                </div>
+                <div class="feature-box">
+                    <h4>75%</h4>
+                    <p>再現率</p>
+                </div>
+                <div class="feature-box">
+                    <h4>6段階</h4>
+                    <p>処理パイプライン</p>
+                </div>
+            </div>
+            <p style="margin-top: 2rem; text-align: center;">開発者：Dr. Marco Büchler（元・ライプチヒ大学、元・ゲッティンゲン大学ゲッティンゲン・デジタル人文学センター）</p>
+        </div>
+
+        <!-- Slide 6: TRACER Architecture -->
+        <div class="slide">
+            <div class="slide-number">6 / 20</div>
+            <h2>TRACERのアーキテクチャ</h2>
+            <h3>6段階処理パイプライン</h3>
+            <ol style="font-size: 1.3rem;">
+                <li>前処理（Preprocessing）</li>
+                <li>特徴抽出（Featuring/Training）</li>
+                <li>選択（Selection）</li>
+                <li>リンキング（Linking）</li>
+                <li>スコアリング（Scoring）</li>
+                <li>後処理（Postprocessing）</li>
+            </ol>
+            <div class="card" style="margin-top: 2rem;">
+                <p><span class="highlight">検出可能なテキスト再利用タイプ：</span><br>
+                逐語的引用、準逐語的引用、パラフレーズ、暗示的参照</p>
+            </div>
+        </div>
+
+        <!-- Slide 7: TRACER Strengths & Limitations -->
+        <div class="slide">
+            <div class="slide-number">7 / 20</div>
+            <h2>TRACERの強みと制限</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>強み</h3>
+                    <ul>
+                        <li>最も包括的なアルゴリズム</li>
+                        <li>歴史的テキストに特化した設計</li>
+                        <li>言語非依存アーキテクチャ</li>
+                        <li>高度なカスタマイズ性</li>
+                        <li>WordNetを活用した引喩やパラフレーズの検知</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>制限</h3>
+                    <ul>
+                        <li>Java 8への依存性</li>
+                        <li>大規模コーパスでの処理速度</li>
+                        <li>設定の複雑性</li>
+                        <li>暗黙的再利用の精度</li>
+                        <li>開発の終了 (2019) </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Passim Introduction -->
+        <div class="slide">
+            <div class="slide-number">8 / 20</div>
+            <h2>Passim：大規模分散処理</h2>
+            <div class="feature-grid">
+                <div class="feature-box">
+                    <h4>92,514</h4>
+                    <p>記事を5分で処理</p>
+                </div>
+                <div class="feature-box">
+                    <h4>16億</h4>
+                    <p>単語規模の分析実績</p>
+                </div>
+                <div class="feature-box">
+                    <h4>Apache Spark</h4>
+                    <p>分散処理基盤</p>
+                </div>
+                <div class="feature-box">
+                    <h4>Smith-Waterman</h4>
+                    <p>局所アライメント</p>
+                </div>
+            </div>
+            <p style="margin-top: 2rem; text-align: center;">開発者：Dr. David A. Smith（ノースイースタン大学）</p>
+        </div>
+
+        <!-- Slide 9: Passim Architecture -->
+        <div class="slide">
+            <div class="slide-number">9 / 20</div>
+            <h2>Passimの技術仕様</h2>
+            <h3>2段階アルゴリズム</h3>
+            <ul>
+                <li><span class="highlight">第1段階：</span>n-gramインデックス作成（25文字n-gram）</li>
+                <li><span class="highlight">第2段階：</span>Smith-Watermanアルゴリズムによる精密マッチング</li>
+            </ul>
+            <h3 style="margin-top: 2rem;">動作モード</h3>
+            <ul>
+                <li><span class="highlight">Queryモード：</span>参照テキストからの引用検出</li>
+                <li><span class="highlight">All-pairsモード：</span>コーパス全体での相互比較</li>
+                <li><span class="highlight">Seriatimモード：</span>最適アライメントの特定</li>
+            </ul>
+        </div>
+
+        <!-- Slide 10: LLM Approaches -->
+        <div class="slide">
+            <div class="slide-number">10 / 20</div>
+            <h2>大規模言語モデルによるアプローチ</h2>
+            <h3>主要なプロンプティング戦略</h3>
+            <ul>
+                <li><span class="highlight">自然言語推論（NLI）：</span>含意タスクとしての間テキスト性検出</li>
+                <li><span class="highlight">Chain-of-Thought：</span>段階的推論による分析</li>
+                <li><span class="highlight">ロールベース：</span>文学研究者としての振る舞い</li>
+                <li><span class="highlight">Min-K%確率：</span>訓練データ検出手法</li>
+            </ul>
+            <div class="card" style="margin-top: 2rem;">
+                <p>Zero-shot精度：60-80%<br>
+                Few-shot改善：10-15%（2-5例使用時）</p>
+            </div>
+        </div>
+
+        <!-- Slide 11: LLM Performance Comparison -->
+        <div class="slide">
+            <div class="slide-number">11 / 20</div>
+            <h2>LLMモデル別性能比較（個人的な感想です）</h2>
+            <table class="comparison-table">
+                <tr>
+                    <th>モデル</th>
+                    <th>強み</th>
+                </tr>
+                <tr>
+                    <td>GPTシリーズ</td>
+                    <td>総合的な性能</td>
+                </tr>
+                <tr>
+                    <td>Claudeシリーズ</td>
+                    <td>人文学の特化領域で優位</td>
+                </tr>
+         
+                <tr>
+                    <td>Gemini</td>
+                    <td>コストと効率</td>
+                </tr>
+            </table>
+            <a href="https://docs.google.com/document/d/1az3C_icwHxfFgeLvsbJ4JUgFFsTIJhUrZUUoiMqso2k/edit?tab=t.0#heading=h.g8uwi29grd11" target="_blank" style="display: block; margin-top: 1rem; text-align: center; color: var(--primary-color);">詳細な比較はこちら</a>
+        </div>
+
+        <!-- Slide 12: Comprehensive Comparison -->
+        <div class="slide">
+            <div class="slide-number">12 / 20</div>
+            <h2>3つのアプローチの包括的比較</h2>
+            <table class="comparison-table">
+                <tr>
+                    <th>特性</th>
+                    <th>TRACER</th>
+                    <th>Passim</th>
+                    <th>LLMs</th>
+                </tr>
+                <tr>
+                    <td>スケーラビリティ</td>
+                    <td>中規模</td>
+                    <td>大規模</td>
+                    <td>API依存</td>
+                </tr>
+                <tr>
+                    <td>意味理解</td>
+                    <td>アルゴリズム依存</td>
+                    <td>限定的</td>
+                    <td>優秀</td>
+                </tr>
+                <tr>
+                    <td>導入容易性</td>
+                    <td>複雑</td>
+                    <td>複雑</td>
+                    <td>簡単</td>
+                </tr>
+                <tr>
+                    <td>コスト</td>
+                    <td>初期設定高</td>
+                    <td>インフラ必要</td>
+                    <td>使用量課金あるいはサブスク
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Slide 13: Digital Humanities Applications -->
+        <div class="slide">
+            <div class="slide-number">13 / 20</div>
+            <h2>デジタル人文学における実装事例</h2>
+            <div class="grid">
+                  <div class="card">
+                    <h3>Tesseraeプロジェクト</h3>
+                    <p>ラテン語・ギリシャ語詩の暗示検出：Tesserae</p>
+                </div>
+                <div class="card">
+                    <h3>eTRAPプロジェクト</h3>
+                    <p>古代言語テキストの包括的分析フレームワーク: TRACER (発表者の博論含む）</p>
+                </div>
+              
+                <div class="card">
+                    <h3>Impressoプロジェクト</h3>
+                    <p>1738-1970年の歴史新聞分析インターフェース: Passim</p>
+                </div>
+                <div class="card">
+                    <h3>Viral Textsプロジェクト</h3>
+                    <p>19世紀米国新聞の情報流通ネットワーク解明: Passim</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Language-Specific Challenges -->
+        <div class="slide">
+            <div class="slide-number">14 / 20</div>
+            <h2>言語固有の課題</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>コプト語の課題</h3>
+                    <ul>
+                        <li>30+文字と複数のダイアクリティカル</li>
+                        <li>110+機関に散在する断片的コーパス</li>
+                        <li>6つの主要方言</li>
+                        <li>OCR精度：27-86%</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>英語の課題</h3>
+                    <ul>
+                        <li>大規模データの処理</li>
+                        <li>歴史的スペリング変化</li>
+                        <li>デジタル化ノイズ</li>
+                        <li>分散コンピューティング必須</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Technical Requirements -->
+        <div class="slide">
+            <div class="slide-number">15 / 20</div>
+            <h2>技術要件比較</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>TRACER</h3>
+                    <ul>
+                        <li>Java 8（必須）</li>
+                        <li>Apache Ant</li>
+                        <li>最小600MB RAM</li>
+                        <li>XML設定ファイル</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Passim</h3>
+                    <ul>
+                        <li>Java 8 + Python 3</li>
+                        <li>Apache Spark</li>
+                        <li>8GB+ RAM推奨</li>
+                        <li>マルチコアCPU</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>LLMアプローチ</h3>
+                    <ul>
+                        <li>API アクセス</li>
+                        <li>またはGPU（ローカル）</li>
+                        <li>Python + transformers</li>
+                        <li>$0.001-0.01/1K tokens</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+      
+        <!-- Slide 19: Recommendations -->
+        <div class="slide">
+            <div class="slide-number">19 / 20</div>
+            <h2>実装推奨事項</h2>
+            <table class="comparison-table">
+                <tr>
+                    <th>用途</th>
+                    <th>推奨ツール</th>
+                    <th>理由</th>
+                </tr>
+                <tr>
+                    <td>歴史的テキスト深層分析</td>
+                    <td>TRACER</td>
+                    <td>アルゴリズムの包括性</td>
+                </tr>
+                <tr>
+                    <td>大規模コーパス分析</td>
+                    <td>Passim</td>
+                    <td>スケーラビリティ</td>
+                </tr>
+                <tr>
+                    <td>意味的類似性検出</td>
+                    <td>LLMs</td>
+                    <td>文脈理解能力</td>
+                </tr>
+                <tr>
+                    <td>リアルタイムアプリケーション</td>
+                    <td>LLMs + Passim</td>
+                    <td>速度と精度のバランス</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Slide 20: Conclusion -->
+        <div class="slide">
+            <div class="slide-number">20 / 20</div>
+            <h2>結論</h2>
+            <div class="card" style="max-width: 800px; margin: 0 auto;">
+                <p style="font-size: 1.4rem; line-height: 2;">
+                間テキスト性検出は、伝統的な計算手法と最先端技術が融合する転換点にあります。
+                </p>
+                <ul style="margin-top: 2rem;">
+                    <li><span class="highlight">TRACER：</span>アルゴリズムの包括性</li>
+                    <li><span class="highlight">Passim：</span>スケーラビリティ</li>
+                    <li><span class="highlight">LLMs：</span>意味理解</li>
+                </ul>
+                <p style="margin-top: 2rem; font-size: 1.3rem;">
+                各アプローチが独自の強みを持ち、テキスト分析ツールの進化するエコシステムに貢献しています。
+                </p>
+            </div>
+            <p style="text-align: center; margin-top: 3rem; font-size: 1.2rem;">
+                ご清聴ありがとうございました
+            </p>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">前へ</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">次へ</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            
+            if (n >= totalSlides) {
+                currentSlide = 0;
+            } else if (n < 0) {
+                currentSlide = totalSlides - 1;
+            } else {
+                currentSlide = n;
+            }
+            
+            slides[currentSlide].classList.add('active');
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'Home') showSlide(0);
+            if (e.key === 'End') showSlide(totalSlides - 1);
+        });
+
+        // Touch/swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) changeSlide(1);
+            if (touchEndX > touchStartX + 50) changeSlide(-1);
+        }
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

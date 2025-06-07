@@ -174,12 +174,11 @@
         .navigation {
             position: fixed;
             bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
+            right: 30px;
             display: flex;
             gap: 1rem;
             background: rgba(0, 0, 0, 0.8);
-            padding: 1rem 2rem;
+            padding: 0.8rem 1.2rem;
             border-radius: 50px;
             backdrop-filter: blur(10px);
             z-index: 100;
@@ -189,7 +188,7 @@
             background: var(--gradient-2);
             border: none;
             color: white;
-            padding: 0.8rem 2rem;
+            padding: 0.6rem 1.5rem;
             border-radius: 25px;
             cursor: pointer;
             font-size: 1rem;
@@ -205,6 +204,7 @@
         .nav-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
         }
 
         .slide-number {
@@ -306,6 +306,17 @@
             .grid {
                 grid-template-columns: 1fr;
             }
+
+            .navigation {
+                bottom: 20px;
+                right: 20px;
+                padding: 0.6rem 1rem;
+            }
+
+            .nav-btn {
+                padding: 0.5rem 1.2rem;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -313,16 +324,52 @@
     <div class="presentation-container">
         <!-- Slide 1: Title -->
         <div class="slide active">
-            <div class="slide-number">1 / 20</div>
+            <div class="slide-number">1 / 21</div>
             <h1>間テクスト性分析における諸大規模言語モデルとテクスト・リユース探知プログラムTRACERの使用比較</h1>
             <p class="subtitle">宮川創</p>
             <p class="subtitle">筑波大学</p>
             <p class="author">2025年6月7日</p>
         </div>
 
-        <!-- Slide 2: Overview -->
+        <!-- Slide 2: Profile -->
         <div class="slide">
-            <div class="slide-number">2 / 20</div>
+            <div class="slide-number">2 / 21</div>
+            <h2>発表者プロフィール</h2>
+            <div class="card" style="max-width: 900px; margin: 2rem auto;">
+                <h3 style="text-align: center; margin-bottom: 2rem;">宮川 創</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h3>2015-2022年</h3>
+                        <p><span class="highlight">ゲッティンゲン大学博士課程</span><br>
+                        博士論文：「コプト語修道院文献における古代訳聖書からのインターテクスチュアリティ」</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>研究手法</h3>
+                        <p>ドイツ研究教育省（BMBF）の助成を受けた<span class="highlight">TRACER</span>を使用<br>
+                        コプト語文献と古代訳聖書間の間テクスト性を体系的に分析</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>専門分野</h3>
+                        <p>エジプト学・コプト学・歴史言語学・言語類型論<br>
+                        計算機科学（自然言語処理）</p>
+                    </div>
+                </div>
+            </div>
+            <div class="feature-grid" style="margin-top: 2rem;">
+                <div class="feature-box">
+                    <h4>学際的アプローチ</h4>
+                    <p>人文学とデジタル技術の融合</p>
+                </div>
+                <div class="feature-box">
+                    <h4>国際的研究経験</h4>
+                    <p>ドイツ・日本での研究活動</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Overview -->
+        <div class="slide">
+            <div class="slide-number">3 / 21</div>
             <h2>プレゼンテーション概要</h2>
             <div class="grid">
                 <div class="card">
@@ -337,13 +384,12 @@
                     <h3>実装事例</h3>
                     <p>デジタル人文学における応用</p>
                 </div>
-
             </div>
         </div>
 
-        <!-- Slide 3: Historical Background -->
+        <!-- Slide 4: Historical Background -->
         <div class="slide">
-            <div class="slide-number">3 / 20</div>
+            <div class="slide-number">4 / 21</div>
             <h2>間テクスト性理論の起源</h2>
             <div class="timeline">
                 <div class="timeline-item">
@@ -362,9 +408,9 @@
             </div>
         </div>
 
-        <!-- Slide 4: Evolution to Digital -->
+        <!-- Slide 5: Evolution to Digital -->
         <div class="slide">
-            <div class="slide-number">4 / 20</div>
+            <div class="slide-number">5 / 21</div>
             <h2>技術の進化と人文学への応用</h2>
             <ul>
                 <li><span class="highlight">1990年代：</span>データベース構築とコンコーダンス作成</li>
@@ -378,9 +424,9 @@
             </div>
         </div>
 
-        <!-- Slide 5: TRACER Introduction -->
+        <!-- Slide 6: TRACER Introduction -->
         <div class="slide">
-            <div class="slide-number">5 / 20</div>
+            <div class="slide-number">6 / 21</div>
             <h2>TRACER：包括的アルゴリズムスイート</h2>
             <div class="feature-grid">
                 <div class="feature-box">
@@ -399,9 +445,9 @@
             <p style="margin-top: 2rem; text-align: center;">開発者：Dr. Marco Büchler（元・ライプチヒ大学、元・ゲッティンゲン大学ゲッティンゲン・デジタル人文学センター）</p>
         </div>
 
-        <!-- Slide 6: TRACER Architecture -->
+        <!-- Slide 7: TRACER Architecture -->
         <div class="slide">
-            <div class="slide-number">6 / 20</div>
+            <div class="slide-number">7 / 21</div>
             <h2>TRACERのアーキテクチャ</h2>
             <h3>6段階処理パイプライン</h3>
             <ol style="font-size: 1.3rem;">
@@ -418,9 +464,9 @@
             </div>
         </div>
 
-        <!-- Slide 7: TRACER Strengths & Limitations -->
+        <!-- Slide 8: TRACER Strengths & Limitations -->
         <div class="slide">
-            <div class="slide-number">7 / 20</div>
+            <div class="slide-number">8 / 21</div>
             <h2>TRACERの強みと制限</h2>
             <div class="grid">
                 <div class="card">
@@ -446,9 +492,9 @@
             </div>
         </div>
 
-        <!-- Slide 8: Passim Introduction -->
+        <!-- Slide 9: Passim Introduction -->
         <div class="slide">
-            <div class="slide-number">8 / 20</div>
+            <div class="slide-number">9 / 21</div>
             <h2>Passim：大規模分散処理</h2>
             <div class="feature-grid">
                 <div class="feature-box">
@@ -471,9 +517,9 @@
             <p style="margin-top: 2rem; text-align: center;">開発者：Dr. David A. Smith（ノースイースタン大学）</p>
         </div>
 
-        <!-- Slide 9: Passim Architecture -->
+        <!-- Slide 10: Passim Architecture -->
         <div class="slide">
-            <div class="slide-number">9 / 20</div>
+            <div class="slide-number">10 / 21</div>
             <h2>Passimの技術仕様</h2>
             <h3>2段階アルゴリズム</h3>
             <ul>
@@ -488,35 +534,9 @@
             </ul>
         </div>
 
-
-                <!-- Slide 13: Digital Humanities Applications -->
+        <!-- Slide 11: LLM Approaches -->
         <div class="slide">
-            <div class="slide-number">13 / 20</div>
-            <h2>デジタル人文学における実装事例</h2>
-            <div class="grid">
-                  <div class="card">
-                    <h3>Tesseraeプロジェクト</h3>
-                    <p>ラテン語・ギリシャ語詩の暗示検出：Tesserae</p>
-                </div>
-                <div class="card">
-                    <h3>eTRAPプロジェクト</h3>
-                    <p>古代言語テクストの包括的分析フレームワーク: TRACER (発表者の博論含む）</p>
-                </div>
-              
-                <div class="card">
-                    <h3>Impressoプロジェクト</h3>
-                    <p>1738-1970年の歴史新聞分析インターフェース: Passim</p>
-                </div>
-                <div class="card">
-                    <h3>Viral Textsプロジェクト</h3>
-                    <p>19世紀米国新聞の情報流通ネットワーク解明: Passim</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 10: LLM Approaches -->
-        <div class="slide">
-            <div class="slide-number">10 / 20</div>
+            <div class="slide-number">11 / 21</div>
             <h2>大規模言語モデルによるアプローチ</h2>
             <h3>主要なプロンプティング戦略</h3>
             <ul>
@@ -525,12 +545,11 @@
                 <li><span class="highlight">ロールベース：</span>文学研究者としての振る舞い</li>
                 <li><span class="highlight">Min-K%確率：</span>訓練データ検出手法</li>
             </ul>
-   
         </div>
 
-        <!-- Slide 11: LLM Performance Comparison -->
+        <!-- Slide 12: LLM Performance Comparison -->
         <div class="slide">
-            <div class="slide-number">11 / 20</div>
+            <div class="slide-number">12 / 21</div>
             <h2>LLMモデル別性能比較（個人的な感想です）</h2>
             <table class="comparison-table">
                 <tr>
@@ -545,7 +564,6 @@
                     <td>Claudeシリーズ</td>
                     <td>人文学の特化領域で優位</td>
                 </tr>
-         
                 <tr>
                     <td>Gemini</td>
                     <td>コストと効率</td>
@@ -554,9 +572,9 @@
             <a href="https://docs.google.com/document/d/1az3C_icwHxfFgeLvsbJ4JUgFFsTIJhUrZUUoiMqso2k/edit?tab=t.0#heading=h.g8uwi29grd11" target="_blank" style="display: block; margin-top: 1rem; text-align: center; color: var(--primary-color);">詳細な比較はこちら</a>
         </div>
 
-        <!-- Slide 12: Comprehensive Comparison -->
+        <!-- Slide 13: Comprehensive Comparison -->
         <div class="slide">
-            <div class="slide-number">12 / 20</div>
+            <div class="slide-number">13 / 21</div>
             <h2>3つのアプローチの包括的比較</h2>
             <table class="comparison-table">
                 <tr>
@@ -587,18 +605,58 @@
                     <td>コスト</td>
                     <td>初期設定高</td>
                     <td>インフラ必要</td>
-                    <td>使用量課金あるいはサブスク
-                    </td>
+                    <td>使用量課金あるいはサブスク</td>
                 </tr>
             </table>
         </div>
 
-
-
-
-        <!-- Slide 15: Technical Requirements -->
+        <!-- Slide 14: Digital Humanities Applications -->
         <div class="slide">
-            <div class="slide-number">15 / 20</div>
+            <div class="slide-number">14 / 21</div>
+            <h2>デジタル人文学における実装事例</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Tesseraeプロジェクト</h3>
+                    <p>ラテン語・ギリシャ語詩の暗示検出：Tesserae</p>
+                </div>
+                <div class="card">
+                    <h3>eTRAPプロジェクト</h3>
+                    <p>古代言語テクストの包括的分析フレームワーク: TRACER (発表者の博論含む）</p>
+                </div>
+                <div class="card">
+                    <h3>Impressoプロジェクト</h3>
+                    <p>1738-1970年の歴史新聞分析インターフェース: Passim</p>
+                </div>
+                <div class="card">
+                    <h3>Viral Textsプロジェクト</h3>
+                    <p>19世紀米国新聞の情報流通ネットワーク解明: Passim</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: LLM Implementation Benefits -->
+        <div class="slide">
+            <div class="slide-number">15 / 21</div>
+            <h2>LLMによる実装の利点</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>文脈理解</h3>
+                    <p>意味的類似性と暗黙的参照の高精度検出</p>
+                </div>
+                <div class="card">
+                    <h3>多言語対応</h3>
+                    <p>100以上の言語での即座の分析</p>
+                </div>
+                <div class="card">
+                    <h3>迅速な導入</h3>
+                    <p>APIベースで数分でプロトタイプ作成可能</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Technical Requirements -->
+        <div class="slide">
+            <div class="slide-number">16 / 21</div>
             <h2>技術要件比較</h2>
             <div class="grid">
                 <div class="card">
@@ -631,10 +689,77 @@
             </div>
         </div>
 
-      
-        <!-- Slide 19: Recommendations -->
+        <!-- Slide 17: Implementation Selection Criteria -->
         <div class="slide">
-            <div class="slide-number">19 / 20</div>
+            <div class="slide-number">17 / 21</div>
+            <h2>実装の選択基準</h2>
+            <div class="card">
+                <h3>プロジェクト規模</h3>
+                <ul>
+                    <li><span class="highlight">小規模（〜1万文書）：</span>LLMまたはTRACER</li>
+                    <li><span class="highlight">中規模（〜10万文書）：</span>TRACER</li>
+                    <li><span class="highlight">大規模（10万以上）：</span>Passim</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>分析タイプ</h3>
+                <ul>
+                    <li><span class="highlight">逐語的検出：</span>Passim</li>
+                    <li><span class="highlight">パラフレーズ検出：</span>TRACER</li>
+                    <li><span class="highlight">意味的類似性：</span>LLMs</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 18: Future Prospects -->
+        <div class="slide">
+            <div class="slide-number">18 / 21</div>
+            <h2>将来の展望</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h3>ハイブリッドアプローチ</h3>
+                    <p>伝統的手法とLLMの組み合わせによる精度向上</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>リアルタイム分析</h3>
+                    <p>ストリーミングデータへの即時対応</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>多モーダル展開</h3>
+                    <p>テキスト以外のメディアへの適用</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 19: Implementation Considerations -->
+        <div class="slide">
+            <div class="slide-number">19 / 21</div>
+            <h2>実装時の注意点</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>評価指標の設定</h3>
+                    <ul>
+                        <li>精度（Precision）</li>
+                        <li>再現率（Recall）</li>
+                        <li>F1スコア</li>
+                        <li>処理時間</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>データ準備</h3>
+                    <ul>
+                        <li>文字エンコーディング</li>
+                        <li>正規化処理</li>
+                        <li>メタデータ管理</li>
+                        <li>バージョン管理</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 20: Recommendations -->
+        <div class="slide">
+            <div class="slide-number">20 / 21</div>
             <h2>実装推奨事項</h2>
             <table class="comparison-table">
                 <tr>
@@ -665,9 +790,9 @@
             </table>
         </div>
 
-        <!-- Slide 20: Conclusion -->
+        <!-- Slide 21: Conclusion -->
         <div class="slide">
-            <div class="slide-number">20 / 20</div>
+            <div class="slide-number">21 / 21</div>
             <h2>結論</h2>
             <div class="card" style="max-width: 800px; margin: 0 auto;">
                 <p style="font-size: 1.4rem; line-height: 2;">
